@@ -112,6 +112,13 @@ export default function LoginPage() {
                             {loading ? 'Authenticating...' : 'Sign In'}
                             {!loading && <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />}
                         </button>
+
+                        <Link
+                            href="/reset-password"
+                            className="w-full h-[3.5rem] bg-zinc-900 text-zinc-400 font-semibold rounded-[1rem] flex items-center justify-center hover:bg-zinc-800 hover:text-white transition-all border border-white/5"
+                        >
+                            Reset Password
+                        </Link>
                     </form>
 
                     <div className="auth-footer">
