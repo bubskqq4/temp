@@ -57,13 +57,20 @@ export default function RegisterPage() {
 
             if (signUpError) throw signUpError
 
-            router.push('/dashboard')
+            if (data?.session) {
+                router.push('/dashboard')
+            } else {
+                setStatus('success')
+                setError('') // Clear any error
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to create account')
         } finally {
             setLoading(false)
         }
     }
+
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
 
     return (
         <div className="auth-wrapper">
@@ -86,87 +93,106 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="auth-card">
-                    <form onSubmit={handleRegister} className="auth-form">
-                        <div className="auth-input-group">
-                            <label className="auth-label">Display Name</label>
-                            <div className="auth-input-wrapper">
-                                <User className="auth-input-icon" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Your Name"
-                                    className="auth-input"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
+                    {status === 'success' ? (
+                        <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+                            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-2">
+                                <ShieldCheck size={32} className="text-green-400" />
                             </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-label">Invite Code</label>
-                            <div className="auth-input-wrapper">
-                                <Key className="auth-input-icon" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Enter your invite code"
-                                    className="auth-input"
-                                    value={betaKey}
-                                    onChange={(e) => setBetaKey(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-label">Work Email</label>
-                            <div className="auth-input-wrapper">
-                                <Mail className="auth-input-icon" size={18} />
-                                <input
-                                    type="email"
-                                    placeholder="name@vision.com"
-                                    className="auth-input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-label">Password</label>
-                            <div className="auth-input-wrapper">
-                                <Lock className="auth-input-icon" size={18} />
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="auth-input"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="auth-error"
+                            <h2 className="text-xl font-semibold text-white">Account Created!</h2>
+                            <p className="text-zinc-400 leading-relaxed">
+                                Your account is ready. <br />
+                                Please check your email to verify your account.
+                            </p>
+                            <Link
+                                href="/login"
+                                className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all"
                             >
-                                <ShieldCheck size={18} />
-                                {error}
-                            </motion.div>
-                        )}
+                                Back to Login
+                            </Link>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleRegister} className="auth-form">
+                            <div className="auth-input-group">
+                                <label className="auth-label">Display Name</label>
+                                <div className="auth-input-wrapper">
+                                    <User className="auth-input-icon" size={18} />
+                                    <input
+                                        type="text"
+                                        placeholder="Your Name"
+                                        className="auth-input"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="auth-submit-btn group"
-                        >
-                            {loading ? 'Validating Access...' : 'Create Account'}
-                            {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
-                        </button>
-                    </form>
+                            <div className="auth-input-group">
+                                <label className="auth-label">Invite Code</label>
+                                <div className="auth-input-wrapper">
+                                    <Key className="auth-input-icon" size={18} />
+                                    <input
+                                        type="text"
+                                        placeholder="Enter your invite code"
+                                        className="auth-input"
+                                        value={betaKey}
+                                        onChange={(e) => setBetaKey(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="auth-input-group">
+                                <label className="auth-label">Work Email</label>
+                                <div className="auth-input-wrapper">
+                                    <Mail className="auth-input-icon" size={18} />
+                                    <input
+                                        type="email"
+                                        placeholder="name@vision.com"
+                                        className="auth-input"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="auth-input-group">
+                                <label className="auth-label">Password</label>
+                                <div className="auth-input-wrapper">
+                                    <Lock className="auth-input-icon" size={18} />
+                                    <input
+                                        type="password"
+                                        placeholder="••••••••"
+                                        className="auth-input"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {error && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="auth-error"
+                                >
+                                    <ShieldCheck size={18} />
+                                    {error}
+                                </motion.div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="auth-submit-btn group"
+                            >
+                                {loading ? 'Validating Access...' : 'Create Account'}
+                                {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
+                            </button>
+                        </form>
+                    )}
 
                     <div className="auth-footer">
                         <p className="auth-footer-text">

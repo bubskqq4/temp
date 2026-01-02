@@ -1,38 +1,31 @@
 'use client'
 
 import React, { useState } from 'react'
-
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
-import { Mail, Lock, Plus, ShieldCheck, LogIn } from 'lucide-react'
+import { Mail, Plus, ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
     const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
-    const router = useRouter()
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleReset = async (e: React.FormEvent) => {
         e.preventDefault()
+        setStatus('loading')
         setError('')
-        setLoading(true)
 
         try {
-            const { error: loginError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
+            const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/update-password`,
             })
 
-            if (loginError) throw loginError
-
-            router.push('/dashboard')
+            if (resetError) throw resetError
+            setStatus('success')
         } catch (err: any) {
-            setError(err.message || 'Invalid credentials')
-        } finally {
-            setLoading(false)
+            setError(err.message || 'Failed to send reset link')
+            setStatus('error')
         }
     }
 
@@ -46,85 +39,79 @@ export default function LoginPage() {
                 className="auth-container"
             >
                 <div className="auth-header">
-                    <Link href="/" className="auth-logo-link">
+                    <Link href="/login" className="auth-logo-link">
                         <div className="auth-logo-box">
                             <Plus size={20} className="auth-logo-icon" />
                         </div>
                         <span className="font-bold text-2xl tracking-tighter">Founder's Route</span>
                     </Link>
-                    <h1 className="auth-title">Welcome back.</h1>
-                    <p className="auth-subtitle">Return to your command center.</p>
+                    <h1 className="auth-title">Reset Access.</h1>
+                    <p className="auth-subtitle">We'll send a secure link to your vault.</p>
                 </div>
 
                 <div className="auth-card">
-                    <form onSubmit={handleLogin} className="auth-form">
-                        <div className="auth-input-group">
-                            <label className="auth-label">Work Email</label>
-                            <div className="auth-input-wrapper">
-                                <Mail className="auth-input-icon" size={18} />
-                                <input
-                                    type="email"
-                                    placeholder="name@vision.com"
-                                    className="auth-input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
+                    {status === 'success' ? (
+                        <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+                            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-2">
+                                <CheckCircle2 size={32} className="text-green-400" />
                             </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <div className="flex justify-between items-center px-1">
-                                <label className="auth-label">Password</label>
-                                <Link href="/reset-password" title="reset password" style={{ color: '#a1a1aa' }} className="text-[10px] uppercase font-bold tracking-wider hover:text-white transition-colors">
-                                    Forgot Password?
-                                </Link>
-                            </div>
-                            <div className="auth-input-wrapper">
-                                <Lock className="auth-input-icon" size={18} />
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="auth-input"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="auth-error"
+                            <h2 className="text-xl font-semibold text-white">Check your email</h2>
+                            <p className="text-zinc-400 leading-relaxed">
+                                We've sent a password reset link to <br />
+                                <span className="text-white font-medium">{email}</span>
+                            </p>
+                            <Link
+                                href="/login"
+                                className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all inline-flex items-center gap-2"
                             >
-                                <ShieldCheck size={18} />
-                                {error}
-                            </motion.div>
-                        )}
+                                <ArrowLeft size={18} />
+                                Back to Login
+                            </Link>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleReset} className="auth-form">
+                            <div className="auth-input-group">
+                                <label className="auth-label">Work Email</label>
+                                <div className="auth-input-wrapper">
+                                    <Mail className="auth-input-icon" size={18} />
+                                    <input
+                                        type="email"
+                                        placeholder="name@vision.com"
+                                        className="auth-input"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="auth-submit-btn group"
-                        >
-                            {loading ? 'Authenticating...' : 'Sign In'}
-                            {!loading && <LogIn size={20} className="group-hover:translate-x-1 transition-transform" />}
-                        </button>
-                    </form>
+                            {error && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="auth-error"
+                                >
+                                    <CheckCircle2 size={18} className="text-red-500" />
+                                    {error}
+                                </motion.div>
+                            )}
 
-                    <div className="auth-footer">
-                        <p className="auth-footer-text">
-                            No access yet? <Link href="/register" className="auth-footer-link">Claim your key</Link>
-                        </p>
-                    </div>
+                            <button
+                                type="submit"
+                                disabled={status === 'loading'}
+                                className="auth-submit-btn group"
+                            >
+                                {status === 'loading' ? 'Sending Link...' : 'Send Reset Link'}
+                                {status !== 'loading' && <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                            </button>
+
+                            <Link href="/login" className="flex items-center justify-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-medium mt-2">
+                                <ArrowLeft size={16} />
+                                Back to login
+                            </Link>
+                        </form>
+                    )}
                 </div>
-
-                <p className="auth-security-note">
-                    <ShieldCheck size={14} />
-                    Secure login via Supabase.
-                </p>
             </motion.div>
 
             <style jsx global>{`
@@ -307,39 +294,6 @@ export default function LoginPage() {
                 .auth-submit-btn:disabled {
                     opacity: 0.5;
                     cursor: not-allowed;
-                }
-
-                .auth-footer {
-                    margin-top: 2rem;
-                    padding-top: 2rem;
-                    border-top: 1px solid rgba(255, 255, 255, 0.05);
-                    text-align: center;
-                }
-
-                .auth-footer-text {
-                    font-size: 0.875rem;
-                    color: #a1a1aa;
-                }
-
-                .auth-footer-link {
-                    color: white;
-                    text-decoration: none;
-                    font-weight: 500;
-                }
-
-                .auth-footer-link:hover {
-                    text-decoration: underline;
-                }
-
-                .auth-security-note {
-                    text-align: center;
-                    margin-top: 2rem;
-                    font-size: 0.75rem;
-                    color: #52525b;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.5rem;
                 }
             `}</style>
         </div>
