@@ -73,86 +73,22 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="auth-card">
-                    <form onSubmit={handleRegister} className="auth-form">
-                        <div className="auth-input-group">
-                            <label className="auth-label">Display Name</label>
-                            <div className="auth-input-wrapper">
-                                <User className="auth-input-icon" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Your Name"
-                                    className="auth-input"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    required
-                                />
-                            </div>
+                    <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-2">
+                            <ShieldCheck size={32} className="text-red-400" />
                         </div>
-                        <div className="auth-input-group">
-                            <label className="auth-label">Beta Key</label>
-                            <div className="auth-input-wrapper">
-                                <Key className="auth-input-icon" size={18} />
-                                <input
-                                    type="text"
-                                    placeholder="Enter your 055356 key"
-                                    className="auth-input"
-                                    value={betaKey}
-                                    onChange={(e) => setBetaKey(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-label">Work Email</label>
-                            <div className="auth-input-wrapper">
-                                <Mail className="auth-input-icon" size={18} />
-                                <input
-                                    type="email"
-                                    placeholder="name@vision.com"
-                                    className="auth-input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="auth-input-group">
-                            <label className="auth-label">Password</label>
-                            <div className="auth-input-wrapper">
-                                <Lock className="auth-input-icon" size={18} />
-                                <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className="auth-input"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="auth-error"
-                            >
-                                <ShieldCheck size={18} />
-                                {error}
-                            </motion.div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="auth-submit-btn group"
+                        <h2 className="text-xl font-semibold text-white">Sign-ups are restricted</h2>
+                        <p className="text-zinc-400 leading-relaxed">
+                            Oh no! Sign-ups are disabled for now.<br />
+                            Please contact the owner to get an account.
+                        </p>
+                        <Link
+                            href="mailto:contact@foundersroute.com"
+                            className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all"
                         >
-                            {loading ? 'Validating Access...' : 'Enter the Cockpit'}
-                            {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
-                        </button>
-                    </form>
+                            Contact Owner
+                        </Link>
+                    </div>
 
                     <div className="auth-footer">
                         <p className="auth-footer-text">
